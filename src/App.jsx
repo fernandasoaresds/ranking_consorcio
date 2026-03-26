@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
-import { supabase } from "./supabase";
 
 const B = { dark:"#003641", teal:"#00ae9d", green:"#7db61c", lime:"#c9d200", purple:"#49479d" };
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || "";
+const ADMIN_PASSWORD = "demo123";
+const STORAGE_KEY = "copa-consorcio-v3";
+const GOALS_KEY   = "copa-consorcio-goals-v3";
 
 const mascotSrc = "data:image/jpeg;base64,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";
 
@@ -11,40 +12,48 @@ function todayISO() { return new Date().toISOString().slice(0,10); }
 function currencyBRL(v) { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v||0); }
 function fmtDate(d) { if(!d) return "-"; return new Date(`${d}T12:00:00`).toLocaleDateString("pt-BR"); }
 function pct(a,b) { return b ? Math.min(Math.round((a/b)*100),999) : 0; }
-
-const SAMPLE_SALES = [
-  {id:1,nome:"Fernanda Lima",  pa:"PA 001",valor:185000,data:todayISO()},
-  {id:2,nome:"Paulo Vitor",    pa:"PA 001",valor:162500,data:todayISO()},
-  {id:3,nome:"Ana Beatriz",    pa:"PA 002",valor:149900,data:todayISO()},
-  {id:4,nome:"Carlos Eduardo", pa:"PA 002",valor:121300,data:todayISO()},
-  {id:5,nome:"Juliana Costa",  pa:"PA 003",valor:98500, data:todayISO()},
-  {id:6,nome:"Marcos Silva",   pa:"PA 003",valor:86500, data:todayISO()},
-];
-
-async function fetchSales() {
-  const { data, error } = await supabase
-    .from("sales")
-    .select("*")
-    .order("data", { ascending: false });
-
-  if (error) throw error;
-
-  return (data || []).map((item) => ({
-    ...item,
-    valor: Number(item.valor)
-  }));
+function normalizePA(pa) {
+  const raw = String(pa || "").trim().toUpperCase();
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return raw;
+  return digits.padStart(2, "0");
+}
+function getMetaPA(goals, pa) {
+  return Number(goals[normalizePA(pa)] || 0);
 }
 
-async function fetchGoals() {
-  const { data, error } = await supabase
-    .from("goals")
-    .select("pa, valor");
+const SAMPLE_SALES = [
+  {id:1,nome:"Fernanda Lima",  pa:"01",valor:185000,data:todayISO()},
+  {id:2,nome:"Paulo Vitor",    pa:"01",valor:162500,data:todayISO()},
+  {id:3,nome:"Ana Beatriz",    pa:"02",valor:149900,data:todayISO()},
+  {id:4,nome:"Carlos Eduardo", pa:"02",valor:121300,data:todayISO()},
+  {id:5,nome:"Juliana Costa",  pa:"03",valor:98500, data:todayISO()},
+  {id:6,nome:"Marcos Silva",   pa:"03",valor:86500, data:todayISO()},
+];
 
-  if (error) throw error;
-
-  return Object.fromEntries(
-    (data || []).map((item) => [item.pa, Number(item.valor)])
-  );
+async function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const p = JSON.parse(raw);
+    return Array.isArray(p) && p.length ? p : SAMPLE_SALES;
+  } catch {
+    return SAMPLE_SALES;
+  }
+}
+async function saveToStorage(d) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+}
+async function loadGoals() {
+  try {
+    const raw = localStorage.getItem(GOALS_KEY);
+    const g = JSON.parse(raw);
+    return g && typeof g === "object" ? g : {};
+  } catch {
+    return {};
+  }
+}
+async function saveGoals(g) {
+  localStorage.setItem(GOALS_KEY, JSON.stringify(g));
 }
 
 const Ico = {
@@ -73,7 +82,7 @@ function ChartTip({active,payload,label}) {
   );
 }
 
-function App() {
+export default function CopaConsorcio() {
   const [sales, setSales]   = useState([]);
   const [goals, setGoals]   = useState({});
   const [loading, setLoading] = useState(true);
@@ -89,52 +98,11 @@ function App() {
   const [form, setForm] = useState({nome:"",pa:"",valor:"",data:todayISO()});
   const [goalPA, setGoalPA] = useState(""); const [goalVal, setGoalVal] = useState("");
 
- async function reloadAll() {
-  const [loadedSales, loadedGoals] = await Promise.all([
-    fetchSales(),
-    fetchGoals()
-  ]);
-
-  setSales(loadedSales);
-  setGoals(loadedGoals);
-}
-
-useEffect(() => {
-  let active = true;
-
-  async function boot() {
-    try {
-      const [{ data: { session } }, loadedSales, loadedGoals] = await Promise.all([
-        supabase.auth.getSession(),
-        fetchSales(),
-        fetchGoals()
-      ]);
-
-      if (!active) return;
-
-      setAdminLogged(!!session);
-      setSales(loadedSales);
-      setGoals(loadedGoals);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      if (active) setLoading(false);
-    }
-  }
-
-  boot();
-
-  const {
-    data: { subscription }
-  } = supabase.auth.onAuthStateChange((_event, session) => {
-    setAdminLogged(!!session);
-  });
-
-  return () => {
-    active = false;
-    subscription.unsubscribe();
-  };
-}, []);
+  useEffect(()=>{
+    Promise.all([loadFromStorage(),loadGoals()]).then(([s,g])=>{setSales(s);setGoals(g);setLoading(false);});
+  },[]);
+  useEffect(()=>{ if(!loading) saveToStorage(sales); },[sales,loading]);
+  useEffect(()=>{ if(!loading) saveGoals(goals); },[goals,loading]);
 
   const allPAs = useMemo(()=>[...new Set(sales.map(s=>s.pa).filter(Boolean))].sort(),[sales]);
 
@@ -176,114 +144,33 @@ useEffect(() => {
     return Object.values(map).sort((a,b)=>a.data<b.data?-1:1).map(d=>({...d,dataFmt:fmtDate(d.data)}));
   },[sales]);
 
-  const paChartData = useMemo(()=>paStats.map(p=>({pa:p.pa,total:p.total,vendas:p.count,meta:goals[p.pa]||0})),[paStats,goals]);
+  const paChartData = useMemo(
+    () => paStats.map(p => ({
+      pa: p.pa,
+      total: p.total,
+      vendas: p.count,
+      meta: getMetaPA(goals, p.pa)
+    })),
+    [paStats, goals]
+  );
   const pieData     = useMemo(()=>paStats.map((p,i)=>({name:p.pa,value:p.total,color:[B.teal,B.lime,B.purple,B.green,"#e07b39","#c9509d"][i%6]})),[paStats]);
 
   const totalVol = filtered.reduce((s,x)=>s+Number(x.valor),0);
-  const leader   = ranking[0]; const topVal = leader?.total||1;
+  const leader = ranking[0];
 
-  async function loginAdmin() {
-  if (!ADMIN_EMAIL) {
-    setPwdErr("Defina VITE_ADMIN_EMAIL na Vercel.");
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email: ADMIN_EMAIL,
-    password: pwd
-  });
-
-  if (error) {
-    setPwdErr("Senha incorreta.");
-    return;
-  }
-
-  setPwd("");
-  setPwdErr("");
-  setAdminOpen(false);
-}
-
-async function logoutAdmin() {
-  await supabase.auth.signOut();
-  setAdminLogged(false);
-  setAdminOpen(false);
-}
+  function loginAdmin(){if(pwd===ADMIN_PASSWORD){setAdminLogged(true);setPwd("");setPwdErr("");}else setPwdErr("Senha incorreta.");}
+  function logoutAdmin(){setAdminLogged(false);setAdminOpen(false);}
   function openNew(){setEditId(null);setForm({nome:"",pa:"",valor:"",data:filterDate||todayISO()});setFormOpen(true);}
   function openEdit(s){setEditId(s.id);setForm({nome:s.nome,pa:s.pa||"",valor:String(s.valor),data:s.data});setFormOpen(true);}
-  async function submitSale() {
-  if (!form.nome.trim() || !form.valor || !form.data) return;
-
-  const payload = {
-    id: editId || Date.now(),
-    nome: form.nome.trim(),
-    pa: form.pa.trim() || null,
-    valor: Number(form.valor),
-    data: form.data
-  };
-
-  const { error } = await supabase
-    .from("sales")
-    .upsert(payload, { onConflict: "id" });
-
-  if (error) {
-    console.error(error);
-    return;
+  function submitSale(){
+    if(!form.nome.trim()||!form.valor||!form.data) return;
+    const p={id:editId||Date.now(),nome:form.nome.trim(),pa:normalizePA(form.pa)||null,valor:Number(form.valor),data:form.data};
+    setSales(prev=>editId?prev.map(s=>s.id===editId?p:s):[...prev,p]);
+    setFormOpen(false);
   }
-
-  await reloadAll();
-  setFormOpen(false);
-}
-
-async function removeSale(id) {
-  const { error } = await supabase
-    .from("sales")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  await reloadAll();
-}
-
-async function saveGoal() {
-  if (!goalPA.trim() || !goalVal) return;
-
-  const { error } = await supabase
-    .from("goals")
-    .upsert(
-      {
-        pa: goalPA.trim(),
-        valor: Number(goalVal)
-      },
-      { onConflict: "pa" }
-    );
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  await reloadAll();
-  setGoalPA("");
-  setGoalVal("");
-}
-
-async function removeGoal(pa) {
-  const { error } = await supabase
-    .from("goals")
-    .delete()
-    .eq("pa", pa);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  await reloadAll();
-}
+  function removeSale(id){setSales(prev=>prev.filter(s=>s.id!==id));}
+  function saveGoal(){if(!goalPA.trim()||!goalVal)return;const paNormalizado=normalizePA(goalPA);setGoals(prev=>({...prev,[paNormalizado]:Number(goalVal)}));setGoalPA("");setGoalVal("");}
+  function removeGoal(pa){setGoals(prev=>{const n={...prev};delete n[pa];return n;});}
 
   if(loading) return (
     <div style={{minHeight:"100vh",background:"#001820",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -362,7 +249,7 @@ async function removeGoal(pa) {
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:14,marginTop:-24,position:"relative",zIndex:2}}>
           {[
-            {label:"Volume Total",  value:currencyBRL(totalVol),       icon:"💰",c:B.teal},
+            {label:"Volume do Dia",  value:currencyBRL(totalVol),       icon:"💰",c:B.teal},
             {label:"Lançamentos",    value:filtered.length,              icon:"📋",c:B.purple},
             {label:"Líder",          value:leader?.nome||"—",            icon:"👑",c:B.lime},
             {label:"Ticket Médio",   value:currencyBRL(filtered.length?totalVol/filtered.length:0),icon:"📈",c:B.green},
@@ -403,10 +290,11 @@ async function removeGoal(pa) {
                   </div>
                   <div style={{marginTop:12}}>
                     <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:p.dk?"rgba(0,54,65,.55)":"rgba(255,255,255,.5)",marginBottom:5}}>
-                      <span>Força na Copa</span><span>{pct(p.r.total,topVal)}%</span>
+                      <span>Atingimento da Meta</span>
+                      <span>{getMetaPA(goals, p.r.pa) ? `${pct(p.r.total, getMetaPA(goals, p.r.pa))}%` : "Sem meta"}</span>
                     </div>
                     <div style={{background:"rgba(0,0,0,.22)",borderRadius:999,height:7,overflow:"hidden"}}>
-                      <div style={{width:`${pct(p.r.total,topVal)}%`,height:"100%",background:p.dk?"rgba(0,0,0,.36)":"rgba(255,255,255,.62)",borderRadius:999,transition:"width .8s ease"}}/>
+                      <div style={{width:`${getMetaPA(goals, p.r.pa) ? Math.min((p.r.total / getMetaPA(goals, p.r.pa)) * 100, 100) : 0}%`,height:"100%",background:p.dk?"rgba(0,0,0,.36)":"rgba(255,255,255,.62)",borderRadius:999,transition:"width .8s ease"}}/>
                     </div>
                   </div>
                 </div>
@@ -471,9 +359,7 @@ async function removeGoal(pa) {
                           <span style={{color:"rgba(255,255,255,.42)"}}>Desempenho</span>
                           <span style={{fontWeight:900,color:B.lime,fontFamily:"'Barlow Condensed',sans-serif",fontSize:16}}>{currencyBRL(r.total)}</span>
                         </div>
-                        <div style={{background:"rgba(255,255,255,.08)",borderRadius:999,height:7,overflow:"hidden"}}>
-                          <div style={{width:`${pct(r.total,topVal)}%`,height:"100%",borderRadius:999,transition:"width .8s ease",background:r.pos===1?`linear-gradient(90deg,${B.lime},${B.green})`:r.pos===2?`linear-gradient(90deg,${B.purple},#7a78cc)`:`linear-gradient(90deg,${B.teal},${B.green})`}}/>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
@@ -517,7 +403,7 @@ async function removeGoal(pa) {
                   <p style={{fontSize:12,color:"rgba(255,255,255,.36)",marginBottom:18}}>Volume acumulado (todos os períodos) · metas definidas pelo administrador</p>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:12,marginBottom:22}}>
                     {paStats.map(p=>{
-                      const meta=goals[p.pa]||0; const prog=meta?Math.min((p.total/meta)*100,100):0; const hit=meta&&p.total>=meta;
+                      const meta=getMetaPA(goals,p.pa); const prog=meta?Math.min((p.total/meta)*100,100):0; const hit=meta&&p.total>=meta;
                       return(
                         <div key={p.pa} className="card" style={{padding:18,borderLeft:`3px solid ${hit?B.lime:B.teal}`}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
@@ -751,5 +637,3 @@ async function removeGoal(pa) {
     </div>
   );
 }
-
-export default App;
