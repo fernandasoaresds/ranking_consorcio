@@ -11,6 +11,18 @@ function todayISO() { return new Date().toISOString().slice(0,10); }
 function currencyBRL(v) { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v||0); }
 function fmtDate(d) { if(!d) return "-"; return new Date(`${d}T12:00:00`).toLocaleDateString("pt-BR"); }
 function pct(a,b) { return b ? Math.min(Math.round((a/b)*100),999) : 0; }
+function normalizePA(pa) {
+  const raw = String(pa || "").trim().toUpperCase();
+  const digits = raw.replace(/\D/g, "");
+
+  if (!digits) return raw;
+
+  return digits.padStart(2, "0");
+}
+
+function getMetaPA(goals, pa) {
+  return Number(goals[normalizePA(pa)] || 0);
+}
 
 const SAMPLE_SALES = [
   {id:1,nome:"Fernanda Lima",  pa:"PA 001",valor:185000,data:todayISO()},
@@ -31,6 +43,7 @@ async function fetchSales() {
 
   return (data || []).map((item) => ({
     ...item,
+    pa: normalizePA(item.pa),
     valor: Number(item.valor)
   }));
 }
@@ -43,7 +56,7 @@ async function fetchGoals() {
   if (error) throw error;
 
   return Object.fromEntries(
-    (data || []).map((item) => [item.pa, Number(item.valor)])
+    (data || []).map((item) => [normalizePA(item.pa), Number(item.valor)])
   );
 }
 
@@ -176,11 +189,19 @@ useEffect(() => {
     return Object.values(map).sort((a,b)=>a.data<b.data?-1:1).map(d=>({...d,dataFmt:fmtDate(d.data)}));
   },[sales]);
 
-  const paChartData = useMemo(()=>paStats.map(p=>({pa:p.pa,total:p.total,vendas:p.count,meta:goals[p.pa]||0})),[paStats,goals]);
+  const paChartData = useMemo(
+  () => paStats.map(p => ({
+    pa: p.pa,
+    total: p.total,
+    vendas: p.count,
+    meta: getMetaPA(goals, p.pa)
+  })),
+  [paStats, goals]
+);
   const pieData     = useMemo(()=>paStats.map((p,i)=>({name:p.pa,value:p.total,color:[B.teal,B.lime,B.purple,B.green,"#e07b39","#c9509d"][i%6]})),[paStats]);
 
   const totalVol = filtered.reduce((s,x)=>s+Number(x.valor),0);
-  const leader   = ranking[0]; const topVal = leader?.total||1;
+  const leader = ranking[0];
 
   async function loginAdmin() {
   if (!ADMIN_EMAIL) {
@@ -216,7 +237,7 @@ async function logoutAdmin() {
   const payload = {
     id: editId || Date.now(),
     nome: form.nome.trim(),
-    pa: form.pa.trim() || null,
+    pa: normalizePA(form.pa) || null,
     valor: Number(form.valor),
     data: form.data
   };
@@ -251,11 +272,13 @@ async function removeSale(id) {
 async function saveGoal() {
   if (!goalPA.trim() || !goalVal) return;
 
+  const paNormalizado = normalizePA(goalPA);
+
   const { error } = await supabase
     .from("goals")
     .upsert(
       {
-        pa: goalPA.trim(),
+        pa: paNormalizado,
         valor: Number(goalVal)
       },
       { onConflict: "pa" }
@@ -402,13 +425,32 @@ async function removeGoal(pa) {
                     <p style={{fontSize:24,fontWeight:900,fontFamily:"'Barlow Condensed',sans-serif",color:p.dk?B.dark:"#fff"}}>{currencyBRL(p.r.total)}</p>
                   </div>
                   <div style={{marginTop:12}}>
+                    {(() => {
+                      const metaPA = getMetaPA(goals, p.r.pa);
+                  const percentMeta = metaPA ? pct(p.r.total, metaPA) : 0;
+                  const progressBar = metaPA ? Math.min((p.r.total / metaPA) * 100, 100) : 0;
+
+                  return (
+                    <>
                     <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:p.dk?"rgba(0,54,65,.55)":"rgba(255,255,255,.5)",marginBottom:5}}>
-                      <span>Força na Copa</span><span>{pct(p.r.total,topVal)}%</span>
+                      <span>Atingimento de Meta</span>
+                      <span>{metaPA ? `${percentMeta}%` : "Sem meta"}</span>
                     </div>
                     <div style={{background:"rgba(0,0,0,.22)",borderRadius:999,height:7,overflow:"hidden"}}>
-                      <div style={{width:`${pct(p.r.total,topVal)}%`,height:"100%",background:p.dk?"rgba(0,0,0,.36)":"rgba(255,255,255,.62)",borderRadius:999,transition:"width .8s ease"}}/>
+                      <div
+                        style = {{
+                          width: `${progressBar}%`,
+                          height: "100%",
+                          background: p.dk ? "rgba(0,0,0,.36)" : "rgba(255,255,255,.62)",
+                          borderRadius: 999,
+                          transition: "width .8s ease"
+                        }}
+                      />
                     </div>
-                  </div>
+                   </>
+                  );
+                })()}
+
                 </div>
               ):(
                 <div key={i} style={{minHeight:p.h,borderRadius:22,border:"2px dashed rgba(255,255,255,.09)",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,.2)",fontSize:13}}>Sem dados</div>
@@ -471,9 +513,29 @@ async function removeGoal(pa) {
                           <span style={{color:"rgba(255,255,255,.42)"}}>Desempenho</span>
                           <span style={{fontWeight:900,color:B.lime,fontFamily:"'Barlow Condensed',sans-serif",fontSize:16}}>{currencyBRL(r.total)}</span>
                         </div>
-                        <div style={{background:"rgba(255,255,255,.08)",borderRadius:999,height:7,overflow:"hidden"}}>
-                          <div style={{width:`${pct(r.total,topVal)}%`,height:"100%",borderRadius:999,transition:"width .8s ease",background:r.pos===1?`linear-gradient(90deg,${B.lime},${B.green})`:r.pos===2?`linear-gradient(90deg,${B.purple},#7a78cc)`:`linear-gradient(90deg,${B.teal},${B.green})`}}/>
-                        </div>
+                        
+                        {(() => {
+                          const metaPA = getMetaPA(goals, r.pa);
+                          const progressBar = metaPA ? Math.min((r.total / metaPA) * 100, 100) : 0;
+
+                          return (
+                            <div style={{background:"rgba(255,255,255,.08)",borderRadius:999,height:7,overflow:"hidden"}}>
+                              <div
+                                style={{
+                                  width: `${progressBar}%`,
+                                  height: "100%",
+                                  borderRadius: 999,
+                                  transition: "width .8s ease",
+                                  background: r.pos===1
+                                    ? `linear-gradient(90deg,${B.lime},${B.green})`
+                                    : r.pos===2
+                                    ? `linear-gradient(90deg,${B.purple},#7a78cc)`
+                                    : `linear-gradient(90deg,${B.teal},${B.green})`
+                                }}
+                              />
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -517,7 +579,9 @@ async function removeGoal(pa) {
                   <p style={{fontSize:12,color:"rgba(255,255,255,.36)",marginBottom:18}}>Volume acumulado (todos os períodos) · metas definidas pelo administrador</p>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:12,marginBottom:22}}>
                     {paStats.map(p=>{
-                      const meta=goals[p.pa]||0; const prog=meta?Math.min((p.total/meta)*100,100):0; const hit=meta&&p.total>=meta;
+                      const meta = getMetaPA(goals, p.pa);
+                      const prog = meta ? Math.min((p.total / meta) * 100, 100) : 0;
+                      const hit = meta && p.total >= meta;
                       return(
                         <div key={p.pa} className="card" style={{padding:18,borderLeft:`3px solid ${hit?B.lime:B.teal}`}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
