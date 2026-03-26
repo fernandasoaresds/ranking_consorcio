@@ -362,7 +362,7 @@ async function removeGoal(pa) {
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:14,marginTop:-24,position:"relative",zIndex:2}}>
           {[
-            {label:"Volume do Dia",  value:currencyBRL(totalVol),       icon:"💰",c:B.teal},
+            {label:"Volume Total",  value:currencyBRL(totalVol),       icon:"💰",c:B.teal},
             {label:"Lançamentos",    value:filtered.length,              icon:"📋",c:B.purple},
             {label:"Líder",          value:leader?.nome||"—",            icon:"👑",c:B.lime},
             {label:"Ticket Médio",   value:currencyBRL(filtered.length?totalVol/filtered.length:0),icon:"📈",c:B.green},
