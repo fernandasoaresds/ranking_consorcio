@@ -329,10 +329,10 @@ async function removeGoal(pa) {
         <div style={{position:"absolute",inset:0,opacity:.04,backgroundImage:`repeating-linear-gradient(0deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px),repeating-linear-gradient(90deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px)`,pointerEvents:"none"}}/>
         <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 72% 50%,${B.teal}28 0%,transparent 58%)`,pointerEvents:"none"}}/>
         <div style={{maxWidth:1200,margin:"0 auto",padding:"36px 24px 28px",position:"relative",zIndex:1}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:24,alignItems:"center"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:24,alignItems:"center"}}>
             <div className="asl">
               <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
-                <span style={{background:B.lime,color:B.dark,padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase"}}>⚽ Temporada 2025</span>
+                <span style={{background:B.lime,color:B.dark,padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase"}}>⚽ Temporada 2026</span>
                 <span style={{background:"rgba(255,255,255,.1)",color:"#fff",padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:600,border:"1px solid rgba(255,255,255,.15)"}}>Painel Diário</span>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
@@ -349,16 +349,7 @@ async function removeGoal(pa) {
                 </button>
               </div>
             </div>
-            <div style={{position:"relative",flexShrink:0}} className="apop">
-              <div style={{position:"absolute",inset:-20,background:`radial-gradient(circle,${B.teal}2e,transparent 70%)`,borderRadius:"50%"}}/>
-              <div style={{background:"rgba(255,255,255,.07)",border:"1px solid rgba(255,255,255,.14)",borderRadius:26,padding:10,backdropFilter:"blur(12px)"}}>
-                <img src={mascotSrc} alt="Mascote" style={{height:210,width:"auto",objectFit:"contain",display:"block",filter:"drop-shadow(0 8px 24px rgba(0,0,0,.4))"}}/>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+        
       {/* KPIs */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:14,marginTop:-24,position:"relative",zIndex:2}}>
