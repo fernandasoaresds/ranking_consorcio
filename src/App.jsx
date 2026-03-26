@@ -5,7 +5,7 @@ import { supabase } from "./supabase";
 const B = { dark:"#003641", teal:"#00ae9d", green:"#7db61c", lime:"#c9d200", purple:"#49479d" };
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || "";
 
-const mascotSrc = "data:image/jpeg;base64,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";
+const mascotSrc = "/mascote-copa-2026.png";
 
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function currencyBRL(v) { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v||0); }
@@ -324,31 +324,177 @@ async function removeGoal(pa) {
         select.inp option{background:#002831;color:#fff;}
       `}</style>
 
-      {/* HERO */}
-      <div style={{position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${B.dark} 0%,#005060 50%,${B.teal}99 100%)`}}>
-        <div style={{position:"absolute",inset:0,opacity:.04,backgroundImage:`repeating-linear-gradient(0deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px),repeating-linear-gradient(90deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px)`,pointerEvents:"none"}}/>
-        <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 72% 50%,${B.teal}28 0%,transparent 58%)`,pointerEvents:"none"}}/>
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"36px 24px 28px",position:"relative",zIndex:1}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:24,alignItems:"center"}}>
+           {/* HERO */}
+      <div
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          background: `linear-gradient(135deg, ${B.dark} 0%, #005060 50%, ${B.teal}99 100%)`
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.04,
+            backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px),repeating-linear-gradient(90deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px)`,
+            pointerEvents: "none"
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `radial-gradient(circle at 72% 50%, ${B.teal}28 0%, transparent 58%)`,
+            pointerEvents: "none"
+          }}
+        />
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "36px 24px 28px",
+            position: "relative",
+            zIndex: 1
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 340px",
+              gap: 24,
+              alignItems: "center"
+            }}
+          >
             <div className="asl">
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
-                <span style={{background:B.lime,color:B.dark,padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase"}}>⚽ Temporada 2026</span>
-                <span style={{background:"rgba(255,255,255,.1)",color:"#fff",padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:600,border:"1px solid rgba(255,255,255,.15)"}}>Painel Diário</span>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+                <span
+                  style={{
+                    background: B.lime,
+                    color: B.dark,
+                    padding: "5px 14px",
+                    borderRadius: 999,
+                    fontSize: 12,
+                    fontWeight: 800,
+                    letterSpacing: 1,
+                    textTransform: "uppercase"
+                  }}
+                >
+                  ⚽ Temporada 2026
+                </span>
+                <span
+                  style={{
+                    background: "rgba(255,255,255,.1)",
+                    color: "#fff",
+                    padding: "5px 14px",
+                    borderRadius: 999,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,.15)"
+                  }}
+                >
+                  Painel Diário
+                </span>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
-                <Ico.Soccer/>
-                <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(42px,8vw,82px)",letterSpacing:2,color:"#fff",lineHeight:1,textShadow:`0 0 40px ${B.teal}55`}}>Copa Consórcio</h1>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <Ico.Soccer />
+                <h1
+                  style={{
+                    fontFamily: "'Bebas Neue',sans-serif",
+                    fontSize: "clamp(42px,8vw,82px)",
+                    letterSpacing: 2,
+                    color: "#fff",
+                    lineHeight: 1,
+                    textShadow: `0 0 40px ${B.teal}55`
+                  }}
+                >
+                  Copa Consórcio
+                </h1>
               </div>
-              <p style={{color:"rgba(255,255,255,.68)",fontSize:15,maxWidth:520,lineHeight:1.65}}>Ranking diário de performance comercial — pódio interativo, análises por PA e gestão completa de vendas.</p>
-              <div style={{display:"flex",gap:12,marginTop:22,flexWrap:"wrap"}}>
-                <button className="btn" onClick={()=>setAdminOpen(true)} style={{background:`linear-gradient(135deg,${B.lime},${B.green})`,color:B.dark,padding:"12px 22px",borderRadius:13,fontSize:14,fontWeight:800}}>
-                  <Ico.Lock/> Área do Administrador
+
+              <p
+                style={{
+                  color: "rgba(255,255,255,.68)",
+                  fontSize: 15,
+                  maxWidth: 520,
+                  lineHeight: 1.65
+                }}
+              >
+                Ranking diário de performance comercial — pódio interativo, análises por PA e gestão completa de vendas.
+              </p>
+
+              <div style={{ display: "flex", gap: 12, marginTop: 22, flexWrap: "wrap" }}>
+                <button
+                  className="btn"
+                  onClick={() => setAdminOpen(true)}
+                  style={{
+                    background: `linear-gradient(135deg,${B.lime},${B.green})`,
+                    color: B.dark,
+                    padding: "12px 22px",
+                    borderRadius: 13,
+                    fontSize: 14,
+                    fontWeight: 800
+                  }}
+                >
+                  <Ico.Lock /> Área do Administrador
                 </button>
-                <button className="btn" onClick={()=>document.getElementById("main-sec")?.scrollIntoView({behavior:"smooth"})} style={{background:"rgba(255,255,255,.1)",color:"#fff",padding:"12px 22px",borderRadius:13,fontSize:14,fontWeight:700,border:"1px solid rgba(255,255,255,.2)"}}>
-                  <Ico.Trophy s={16}/> Ver Ranking
+
+                <button
+                  className="btn"
+                  onClick={() => document.getElementById("main-sec")?.scrollIntoView({ behavior: "smooth" })}
+                  style={{
+                    background: "rgba(255,255,255,.1)",
+                    color: "#fff",
+                    padding: "12px 22px",
+                    borderRadius: 13,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    border: "1px solid rgba(255,255,255,.2)"
+                  }}
+                >
+                  <Ico.Trophy s={16} /> Ver Ranking
                 </button>
               </div>
             </div>
+
+            <div
+              className="apop"
+              style={{
+                position: "relative",
+                flexShrink: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+                minWidth: 280
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "10% 10% 18% 10%",
+                  background: `radial-gradient(circle, ${B.teal}33 0%, transparent 72%)`,
+                  filter: "blur(8px)",
+                  pointerEvents: "none"
+                }}
+              />
+              <img
+                src={mascotSrc}
+                alt="Mascote Copa Consórcio"
+                style={{
+                  width: "100%",
+                  maxWidth: 320,
+                  height: "auto",
+                  objectFit: "contain",
+                  display: "block",
+                  background: "transparent",
+                  filter: "drop-shadow(0 14px 26px rgba(0,0,0,.35))"
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
         
       {/* KPIs */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px"}}>
