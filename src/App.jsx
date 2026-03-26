@@ -323,36 +323,173 @@ async function removeGoal(pa) {
         select.inp option{background:#002831;color:#fff;}
       `}</style>
 
-      {/* HERO */}
-      <div style={{position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${B.dark} 0%,#005060 50%,${B.teal}99 100%)`}}>
-        <div style={{position:"absolute",inset:0,opacity:.04,backgroundImage:`repeating-linear-gradient(0deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px),repeating-linear-gradient(90deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px)`,pointerEvents:"none"}}/>
-        <div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 72% 50%,${B.teal}28 0%,transparent 58%)`,pointerEvents:"none"}}/>
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"36px 24px 28px",position:"relative",zIndex:1}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:24,alignItems:"center"}}>
+            {/* HERO */}
+      <div
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          background: `linear-gradient(135deg, ${B.dark} 0%, #005060 50%, ${B.teal}99 100%)`
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.04,
+            backgroundImage: `repeating-linear-gradient(0deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px),repeating-linear-gradient(90deg,transparent,transparent 60px,${B.lime} 60px,${B.lime} 62px)`,
+            pointerEvents: "none"
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `radial-gradient(circle at 72% 50%, ${B.teal}28 0%, transparent 58%)`,
+            pointerEvents: "none"
+          }}
+        />
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "36px 24px 28px",
+            position: "relative",
+            zIndex: 1
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 340px",
+              gap: 24,
+              alignItems: "center"
+            }}
+          >
             <div className="asl">
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
-                <span style={{background:B.lime,color:B.dark,padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase"}}>⚽ Temporada 2026</span>
-                <span style={{background:"rgba(255,255,255,.1)",color:"#fff",padding:"5px 14px",borderRadius:999,fontSize:12,fontWeight:600,border:"1px solid rgba(255,255,255,.15)"}}>Painel Diário</span>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+                <span
+                  style={{
+                    background: B.lime,
+                    color: B.dark,
+                    padding: "5px 14px",
+                    borderRadius: 999,
+                    fontSize: 12,
+                    fontWeight: 800,
+                    letterSpacing: 1,
+                    textTransform: "uppercase"
+                  }}
+                >
+                  ⚽ Temporada 2026
+                </span>
+                <span
+                  style={{
+                    background: "rgba(255,255,255,.1)",
+                    color: "#fff",
+                    padding: "5px 14px",
+                    borderRadius: 999,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,.15)"
+                  }}
+                >
+                  Painel Diário
+                </span>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
-                <Ico.Soccer/>
-                <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(42px,8vw,82px)",letterSpacing:2,color:"#fff",lineHeight:1,textShadow:`0 0 40px ${B.teal}55`}}>Copa Consórcio</h1>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <Ico.Soccer />
+                <h1
+                  style={{
+                    fontFamily: "'Bebas Neue',sans-serif",
+                    fontSize: "clamp(42px,8vw,82px)",
+                    letterSpacing: 2,
+                    color: "#fff",
+                    lineHeight: 1,
+                    textShadow: `0 0 40px ${B.teal}55`
+                  }}
+                >
+                  Copa Consórcio
+                </h1>
               </div>
-              <p style={{color:"rgba(255,255,255,.68)",fontSize:15,maxWidth:520,lineHeight:1.65}}>Ranking diário de performance comercial — pódio interativo, análises por PA e gestão completa de vendas.</p>
-              <div style={{display:"flex",gap:12,marginTop:22,flexWrap:"wrap"}}>
-                <button className="btn" onClick={()=>setAdminOpen(true)} style={{background:`linear-gradient(135deg,${B.lime},${B.green})`,color:B.dark,padding:"12px 22px",borderRadius:13,fontSize:14,fontWeight:800}}>
-                  <Ico.Lock/> Área do Administrador
+
+              <p
+                style={{
+                  color: "rgba(255,255,255,.68)",
+                  fontSize: 15,
+                  maxWidth: 520,
+                  lineHeight: 1.65
+                }}
+              >
+                Ranking diário de performance comercial — pódio interativo, análises por PA e gestão completa de vendas.
+              </p>
+
+              <div style={{ display: "flex", gap: 12, marginTop: 22, flexWrap: "wrap" }}>
+                <button
+                  className="btn"
+                  onClick={() => setAdminOpen(true)}
+                  style={{
+                    background: `linear-gradient(135deg,${B.lime},${B.green})`,
+                    color: B.dark,
+                    padding: "12px 22px",
+                    borderRadius: 13,
+                    fontSize: 14,
+                    fontWeight: 800
+                  }}
+                >
+                  <Ico.Lock /> Área do Administrador
                 </button>
-                <button className="btn" onClick={()=>document.getElementById("main-sec")?.scrollIntoView({behavior:"smooth"})} style={{background:"rgba(255,255,255,.1)",color:"#fff",padding:"12px 22px",borderRadius:13,fontSize:14,fontWeight:700,border:"1px solid rgba(255,255,255,.2)"}}>
-                  <Ico.Trophy s={16}/> Ver Ranking
+
+                <button
+                  className="btn"
+                  onClick={() => document.getElementById("main-sec")?.scrollIntoView({ behavior: "smooth" })}
+                  style={{
+                    background: "rgba(255,255,255,.1)",
+                    color: "#fff",
+                    padding: "12px 22px",
+                    borderRadius: 13,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    border: "1px solid rgba(255,255,255,.2)"
+                  }}
+                >
+                  <Ico.Trophy s={16} /> Ver Ranking
                 </button>
               </div>
             </div>
-            <div style={{position:"relative",flexShrink:0}} className="apop">
-              <div style={{position:"absolute",inset:-20,background:`radial-gradient(circle,${B.teal}2e,transparent 70%)`,borderRadius:"50%"}}/>
-              <div style={{background:"rgba(255,255,255,.07)",border:"1px solid rgba(255,255,255,.14)",borderRadius:26,padding:10,backdropFilter:"blur(12px)"}}>
-                <img src={mascotSrc} alt="Mascote" style={{height:210,width:"auto",objectFit:"contain",display:"block",filter:"drop-shadow(0 8px 24px rgba(0,0,0,.4))"}}/>
-              </div>
+
+            <div
+              className="apop"
+              style={{
+                position: "relative",
+                flexShrink: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+                minWidth: 280
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "10% 10% 18% 10%",
+                  background: `radial-gradient(circle, ${B.teal}33 0%, transparent 72%)`,
+                  filter: "blur(8px)",
+                  pointerEvents: "none"
+                }}
+              />
+              <img
+                src={mascotSrc}
+                alt="Mascote Copa Consórcio"
+                style={{
+                  width: "100%",
+                  maxWidth: 320,
+                  height: "auto",
+                  objectFit: "contain",
+                  display: "block",
+                  background: "transparent",
+                  filter: "drop-shadow(0 14px 26px rgba(0,0,0,.35))"
+                }}
+              />
             </div>
           </div>
         </div>
