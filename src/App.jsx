@@ -5,7 +5,7 @@ import { supabase } from "./supabase";
 const B = { dark:"#003641", teal:"#00ae9d", green:"#7db61c", lime:"#c9d200", purple:"#49479d" };
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || "";
 
-const mascotSrc = "/mascote-copa-2026.png";
+const mascotSrc = "Elefante mascote e consórcio potiguar.png";
 
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function currencyBRL(v) { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v||0); }
